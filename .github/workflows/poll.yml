@@ -1,0 +1,20 @@
+name: Poll Kalshi odds
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+jobs:
+  poll:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Hit cron poll endpoint
+        run: |
+          status=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            https://kalshi-trading-dashboard.vercel.app/api/cron/poll)
+          echo "status: $status"
+          if [ "$status" != "200" ]; then
+            exit 1
+          fi
