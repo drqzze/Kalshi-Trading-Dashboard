@@ -33,24 +33,27 @@ export function TrackMarketForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-2 sm:flex-row sm:items-start">
-      <div className="flex-1">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+      <div className="glass flex items-center gap-2 rounded-lg px-3 py-2.5">
+        <span className="font-data text-sm text-amber select-none">$</span>
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Paste a ticker (KXFED-26MAR19) or Kalshi market URL"
-          className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm dark:border-neutral-700 dark:bg-neutral-900"
+          placeholder="track KXFED-26MAR19  (or paste a Kalshi market URL)"
+          className="flex-1 bg-transparent font-data text-sm text-text placeholder:text-dim focus:outline-none"
         />
-        {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
+        <button
+          type="submit"
+          disabled={loading}
+          className="rounded-md bg-amber px-3 py-1.5 font-body text-xs font-semibold tracking-wide text-void transition-opacity hover:opacity-90 disabled:opacity-50"
+        >
+          {loading ? "tracking…" : "track"}
+        </button>
       </div>
-      <button
-        type="submit"
-        disabled={loading}
-        className="rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-white dark:text-neutral-900"
-      >
-        {loading ? "Adding…" : "Track market"}
-      </button>
+      {error && (
+        <p className="font-data text-xs text-nova-red">{error}</p>
+      )}
     </form>
   );
 }

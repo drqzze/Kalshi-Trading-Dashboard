@@ -1,26 +1,83 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --void: #06060f;
+  --surface: #11132b;
+  --surface-2: #1a1d3d;
+  --line: #2a2d52;
+  --text: #e8e6f5;
+  --dim: #8b89ab;
+  --amber: #f5b942;
+  --nova: #4ade80;
+  --nova-red: #fb6a6a;
+  --nebula: #7c5cff;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-void: var(--void);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-text: var(--text);
+  --color-dim: var(--dim);
+  --color-amber: var(--amber);
+  --color-nova: var(--nova);
+  --color-nova-red: var(--nova-red);
+  --color-nebula: var(--nebula);
+  --font-display: var(--font-fraunces);
+  --font-body: var(--font-manrope);
+  --font-data: var(--font-jetbrains-mono);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--void);
+  color: var(--text);
+  font-family: var(--font-body);
+}
+
+.glass {
+  background: color-mix(in srgb, var(--surface) 70%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--line);
+}
+
+.glow-amber {
+  box-shadow: 0 0 24px -8px color-mix(in srgb, var(--amber) 60%, transparent);
+}
+
+.text-glow-amber {
+  text-shadow: 0 0 18px color-mix(in srgb, var(--amber) 50%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: var(--star-min-opacity, 0.2);
+  }
+  50% {
+    opacity: var(--star-max-opacity, 0.9);
+  }
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.4);
+  }
 }

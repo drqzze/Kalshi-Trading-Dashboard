@@ -48,20 +48,26 @@ export default async function Home() {
   const rows = await getDashboardData();
 
   return (
-    <div className="min-h-screen bg-white px-6 py-10 dark:bg-black dark:text-neutral-100">
-      <main className="mx-auto max-w-5xl">
-        <h1 className="text-2xl font-semibold">Kalshi Odds Dashboard</h1>
-        <p className="mt-1 text-sm text-neutral-500">
-          Read-only tracking of Kalshi market prices over time. Not trading advice.
-        </p>
+    <div className="px-4 py-10 sm:px-6">
+      <main className="mx-auto max-w-6xl">
+        <div className="mb-8">
+          <p className="font-data text-xs uppercase tracking-[0.2em] text-dim">
+            tracked markets · {rows.length}
+          </p>
+          <h1 className="mt-1 font-display text-3xl font-semibold text-text sm:text-4xl">
+            Price history, not a snapshot.
+          </h1>
+          <p className="mt-2 max-w-xl font-body text-sm text-dim">
+            Read-only odds tracking for the Kalshi markets you choose. Not trading
+            advice — you act on Kalshi yourself.
+          </p>
+        </div>
 
-        <div className="mt-6">
+        <div className="mb-8">
           <TrackMarketForm />
         </div>
 
-        <div className="mt-8">
-          <Dashboard rows={rows} />
-        </div>
+        <Dashboard rows={rows} />
       </main>
     </div>
   );

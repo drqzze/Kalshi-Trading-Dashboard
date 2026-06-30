@@ -10,12 +10,22 @@ export type KalshiMarket = {
   no_bid_dollars: string;
   no_ask_dollars: string;
   volume_24h_fp: string;
+  volume_fp?: string;
+  previous_yes_bid_dollars?: string;
+  previous_yes_ask_dollars?: string;
+  mve_collection_ticker?: string;
 };
 
 export type KalshiEvent = {
   event_ticker: string;
   series_ticker: string;
   title: string;
+  category?: string;
+};
+
+export type MarketWithEvent = KalshiMarket & {
+  seriesTicker: string;
+  category: string;
 };
 
 export class KalshiNotFoundError extends Error {}
@@ -33,6 +43,47 @@ export async function fetchMarket(ticker: string): Promise<KalshiMarket> {
   }
   const data = await res.json();
   return data.market as KalshiMarket;
+}
+
+/**
+ * Pages through Kalshi's public /events endpoint (with nested markets) for
+ * currently open events. /markets?status=open is dominated by auto-generated
+ * combinatorial multi-leg markets (tens of thousands of them); /events only
+ * surfaces real, single-question markets, so Discover is built on this instead.
+ */
+export async function fetchOpenEventMarkets(maxPages = 6): Promise<MarketWithEvent[]> {
+  const all: MarketWithEvent[] = [];
+  let cursor: string | undefined;
+
+  for (let page = 0; page < maxPages; page++) {
+    const url = new URL(`${KALSHI_BASE_URL}/events`);
+    url.searchParams.set("status", "open");
+    url.searchParams.set("limit", "200");
+    url.searchParams.set("with_nested_markets", "true");
+    if (cursor) url.searchParams.set("cursor", cursor);
+
+    // Each page is several MB raw (well over Next's 2MB data-cache limit),
+    // so there's no benefit pretending this is cacheable — fetch fresh.
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) {
+      throw new Error(`Kalshi API error (${res.status}) listing events`);
+    }
+    const data = await res.json();
+    type EventWithMarkets = KalshiEvent & { markets?: KalshiMarket[] };
+    for (const event of (data.events ?? []) as EventWithMarkets[]) {
+      for (const market of event.markets ?? []) {
+        all.push({
+          ...market,
+          seriesTicker: event.series_ticker,
+          category: event.category ?? "Other",
+        });
+      }
+    }
+    cursor = data.cursor || undefined;
+    if (!cursor) break;
+  }
+
+  return all;
 }
 
 export async function fetchEvent(eventTicker: string): Promise<KalshiEvent> {
